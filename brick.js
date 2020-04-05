@@ -1,53 +1,106 @@
 //initiation du context
 const canvas = document.getElementById('mainCanvas');
 const ctx = canvas.getContext('2d');
-
-
 // some constants
-const PADDLE_HEIGHT = 20;
+const PADDLE_HEIGHT = 31;
 const PADDLE_WIDTH = 150;
-const DOWN_SPACE = 20;
-
+const DOWN_SPACE = 100;
+const BALL_RADIUS=15;
 //Objects
 paddle = {
     // coordonee a l'etat zero
   y : canvas.height - PADDLE_HEIGHT - DOWN_SPACE,
   x : (canvas.width/2)-(PADDLE_WIDTH/2),
    //step
-  dx:3,
- 
+  dx : 3,
 
 }
-
-
-
-
-
+ball = {
+    // coordonee a l'etat zero
+  y : canvas.height - PADDLE_HEIGHT - DOWN_SPACE - BALL_RADIUS,
+  x : canvas.width/2,
+    //step
+  dx : 3,
+  dy : -3,
+}
+//drawing Paddle
 
 function drawPaddle(){
     ctx.fillStyle = 'bleu';
     ctx.fillRect(paddle.x,paddle.y,PADDLE_WIDTH,PADDLE_HEIGHT);
 }
+// drawing BALL
+function drawBall(){
+  ctx.beginPath();
+  ctx.fillStyle='red';
+  ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, 2 * Math.PI);
+  ctx.fill();
+}
+
+drawBall();
 
 
+//Moving Paddle
 
 function movePaddle(){
-    if(leftArrow){
+    if(leftArrow && paddle.x > 0 ){
         paddle.x -= paddle.dx;
 
-    }else if(rightArrow){
+    }else if(rightArrow && paddle.x + PADDLE_WIDTH < canvas.width){
      paddle.x += paddle.dx;
     }
 }
 
-//listner 
+//Mouvin BALL
+start = false;
+  function moveBall(){
+    if(start){
+      ball.y += ball.dy;
+      ball.x += ball.dx;
+      if(ball.x + BALL_RADIUS > canvas.width || ball.x - BALL_RADIUS < 0){
+        ball.dx =- ball.dx;
+      }
+      if(ball.y - BALL_RADIUS < 0){
+        ball.dy =- ball.dy;
+      }
+      if(ball.y + BALL_RADIUS > canvas.height){
+        resetGame();
+      }
+      if(iScolsionPaddle()){
+        ball.dy =- ball.dy;
+        console.log("ayih");
+      }
+
+    }
+  }
+  function resetGame(){
+    start = false;
+    ball.dx = 3;
+    ball.dy = -3;
+    ball.x = canvas.width/2;
+    ball.y = canvas.height - PADDLE_HEIGHT - DOWN_SPACE - BALL_RADIUS;
+    paddle.x = (canvas.width/2)-(PADDLE_WIDTH/2);
+    paddle.y = canvas.height - PADDLE_HEIGHT - DOWN_SPACE;
+
+  }
+
+  function iScolsionPaddle(){
+    if(ball.x - BALL_RADIUS > paddle.x &&
+      ball.x + BALL_RADIUS < paddle.x + PADDLE_WIDTH &&
+      ball.y + BALL_RADIUS > paddle.y && ball.y + BALL_RADIUS < paddle.y + PADDLE_HEIGHT  ){
+
+      return true;
+    }
+  }
+
+//listner
+
 leftArrow = false;
 rightArrow = false;
-
 document.addEventListener("keydown",keydowny);
 document.addEventListener("keyup",keyupy);
-
 function keydowny(e){
+    start = true;
     if(e.keyCode === 37)
     leftArrow = true;
     if(e.keyCode === 39)
@@ -59,9 +112,6 @@ function keyupy(e){
     if(e.keyCode === 39)
     rightArrow = false;
 }
-
-
-
 //animation frame function
 
 function frame(){
@@ -71,13 +121,13 @@ function frame(){
 ctx.clearRect(0,0,canvas.width,canvas.height);
 // draw
 drawPaddle();
+drawBall();
 //update
 movePaddle();
+moveBall();
 
 
 //loop the function
 requestAnimationFrame(frame);
 }
 frame();
-
-
