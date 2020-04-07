@@ -92,6 +92,42 @@ start = false;
       return true;
     }
   }
+  //testfunction
+  let tabs = [];
+  let COL = 4;
+  let ROW = 6;
+  const BRICK_WIDTH = 100;
+  const BRICK_HEIGHT = 30;
+  const OFSSET = 40;
+  function createBricks(){
+    for(let i = 0; i < ROW; i++){
+      tabs[i] = [];
+      for(let j = 0; j < COL; j++){
+        tabs[i][j]= {x : i*(OFSSET + BRICK_WIDTH) + OFSSET, y : j*(OFSSET + BRICK_HEIGHT) + OFSSET, statu : true,};
+      }
+    }
+   }
+  console.log(tabs);
+  function drawBricks(){
+    for(let i = 0; i < ROW; i++){
+      for(let j = 0; j < COL; j++){
+        if (tabs[i][j].statu) {
+          ctx.fillRect(tabs[i][j].x, tabs[i][j].y, BRICK_WIDTH, BRICK_HEIGHT);
+        }
+      }
+    }
+  }
+  function colisionBricks(){
+    for(let i = 0; i < ROW; i++){
+      for(let j = 0; j < COL; j++){
+        if(ball.x - BALL_RADIUS > tabs[i][j].x && ball.x + BALL_RADIUS < tabs[i][j].x + BRICK_WIDTH &&
+          ball.y + BALL_RADIUS > tabs[i][j].y && ball.y + BALL_RADIUS < tabs[i][j].y + BRICK_HEIGHT) {
+            tabs[i][j].statu = false;
+        }
+      }
+    }
+  }
+
 
 //listner
 
@@ -113,6 +149,8 @@ function keyupy(e){
     rightArrow = false;
 }
 //animation frame function
+createBricks();
+
 
 function frame(){
 
@@ -120,11 +158,13 @@ function frame(){
 // clear frame
 ctx.clearRect(0,0,canvas.width,canvas.height);
 // draw
+drawBricks();
 drawPaddle();
 drawBall();
 //update
 movePaddle();
 moveBall();
+colisionBricks();
 
 
 //loop the function
