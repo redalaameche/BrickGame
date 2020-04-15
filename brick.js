@@ -27,7 +27,7 @@ ball = {
   y : canvas.height - PADDLE_HEIGHT - DOWN_SPACE - BALL_RADIUS,
   x : canvas.width/2,
     //step
-  dx : 6,
+  dx : 5,
   dy : -6,
 }
 //drawing Paddle
@@ -96,7 +96,7 @@ function moveBall(){
       }
       if(iScolsionPaddle()){
         ball.dy =- ball.dy;
-        console.log("ayih");
+
       }
 
 
@@ -108,14 +108,13 @@ function resetGame(){
     createBricks();
     drawBricks();
     start = false;
+    score = 0;
     ball.dx = ball.dx;
     ball.dy = ball.dy;
     ball.x = canvas.width/2;
     ball.y = canvas.height - PADDLE_HEIGHT - DOWN_SPACE - BALL_RADIUS;
     paddle.x = (canvas.width/2)-(PADDLE_WIDTH/2);
     paddle.y = canvas.height - PADDLE_HEIGHT - DOWN_SPACE;
-
-
   }
 //testColisionOdPaddle
 function iScolsionPaddle(){
@@ -136,15 +135,31 @@ function colisionBricks(){
             tabs[i][j]= {x : 0, y : 0, statu : false,};
             ball.dy =-ball.dy;
             score++;
-
-
+            if(score == COL*ROW) {
+              levelUp();
+            }
         }
-
-
       }
     }
   }
-  
+//fonction de niveau
+function levelUp(){
+  createBricks();
+  drawBricks();
+  start = true;
+  ball.dx = 1+ ball.dx;
+  ball.dy = 1+ ball.dy;
+  ball.x = canvas.width/2;
+  ball.y = canvas.height - PADDLE_HEIGHT - DOWN_SPACE - BALL_RADIUS;
+  paddle.x = (canvas.width/2)-(PADDLE_WIDTH/2);
+  paddle.y = canvas.height - PADDLE_HEIGHT - DOWN_SPACE;
+  paddle.dx = 1 + paddle.dx;
+
+}
+
+
+
+
 
 
 
@@ -184,6 +199,7 @@ function frame(){
   movePaddle();
   moveBall();
   colisionBricks();
+
 
 
   //loop the function
